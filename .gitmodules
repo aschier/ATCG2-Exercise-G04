@@ -1,0 +1,10 @@
+[submodule "OpenMesh"]
+	path = OpenMesh
+	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
+	branch = OpenMesh-8.1
+[submodule "libigl"]
+	path = libigl
+	url = https://github.com/libigl/libigl
+[submodule "eigen3"]
+	path = eigen3
+	url = https://github.com/eigenteam/eigen-git-mirror
