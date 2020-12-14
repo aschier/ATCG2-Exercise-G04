@@ -108,6 +108,10 @@ int main(int argc, char **argv) {
 	OpenMesh::IO::read_mesh(mesh, "example.obj");
 	// Add a property handle to vertices, which stores a double value.
 	mesh.add_property(property_distance);
+	mesh.request_vertex_colors();
+	for(auto vh: mesh.vertices()) {
+		mesh.set_color(vh, Mesh::Color{0,0,0});
+	}
 
 	std::cout << "Vertices:                           " << num_vertices(mesh) << std::endl;
 	std::cout << "Faces:                              " << num_faces(mesh) << std::endl;
@@ -138,9 +142,14 @@ int main(int argc, char **argv) {
 	std::cout << std::endl;
 	std::cout << "Path:";
 	for(auto vh: path) {
+		mesh.set_color(vh, Mesh::Color{255, 0, 0});
 		std::cout << " " << vh.idx();
 	}
 	std::cout << std::endl;
+
+	OpenMesh::IO::Options wopt;
+	wopt += OpenMesh::IO::Options::VertexColor;
+	OpenMesh::IO::write_mesh(mesh, "result.ply", wopt);
 
 	return 0;
 }
