@@ -29,20 +29,30 @@ bool was_visited(Mesh::VertexHandle vh) {
 //// Exercise 1: Find mesh properties ////
 
 int num_vertices(const Mesh &mesh) {
-	int vertices = 0;
 	// TODO: Implement this
-	return vertices;
+	// ////////////////////////////////////////////////Example solution
+	return mesh.n_vertices();
 }
 
 int num_faces(const Mesh &mesh) {
-	int faces = 0;
 	// TODO: Implement this
-	return faces;
+	////////////////////////////////////////////////// Example solution
+	return mesh.n_faces();
 }
 
 int maximum_degree(const Mesh &mesh) {
 	int max_degree = -std::numeric_limits<int>::infinity();
 	// TODO: Implement this
+
+	////////////////////////////////////////////////// Example solution
+	for(auto vh: mesh.vertices()) {
+		int degree = 0;
+		for(Mesh::VertexVertexCCWIter vit = mesh.cvv_ccwbegin(vh); vit != mesh.cvv_ccwend(vh); vit++) {
+			degree++;
+		}
+		max_degree = std::max(max_degree, degree);
+	}
+	////////////////////////////////////////////////// End example solution
 	return max_degree;
 }
 
@@ -66,8 +76,6 @@ double distance_on_mesh(Mesh &mesh, const Mesh::VertexHandle vh_start, const Mes
 	// Process vertices as long as the queue is not empty and the target is not found
 	while(!queue.empty()) {
 		// TODO: Implement the loop body
-		break;
-
 		// Hints:
 		// - Loop invariant: all vertices in the queue have a valid distance, which is sum of the lengths
 		//   of the edges on the shortest path between source_vh and the vertex.
@@ -78,6 +86,23 @@ double distance_on_mesh(Mesh &mesh, const Mesh::VertexHandle vh_start, const Mes
 		// - The only case when the loop is terminated because of an empty queue is when the target vertex cannot be reached.
 		// - You can either use the Mesh::Point::norm method for distance calculations or the Mesh::calc_edge_length method,
 		//   depending on which type of iterators you use for finding neighboring vertices.
+
+		////////////////////////////////////////////////// Example solution
+		auto vh = queue.top();
+		queue.pop();
+		double my_distance = mesh.property(property_distance, vh);
+		if(vh == vh_target) {
+			distance = my_distance;
+			break;
+		} else {
+			for(Mesh::VertexVertexCCWIter vit = mesh.cvv_ccwbegin(vh); vit != mesh.cvv_ccwend(vh); vit++) {
+				if(!was_visited(*vit)) {
+					mesh.property(property_distance, *vit) = my_distance + (mesh.point(vh) - mesh.point(*vit)).norm();
+					queue.push(*vit);
+				}
+			}
+		}
+		////////////////////////////////////////////////// End example solution
 	}
 
 	return distance;
@@ -91,13 +116,26 @@ std::vector<Mesh::VertexHandle> trace_back(const Mesh &mesh, const Mesh::VertexH
 	Mesh::VertexHandle current_vh = target_vh;
 	result_path.push_back(target_vh);
 
+	// TODO: Implement this
 	// Hints:
 	// - Each vertex on the path has a property with its distance to the source.
 	// - Each vertex in an optimal path from the target to the source has a smaller distance than the vertex before.
 	// - The source vertex has distance 0.
-
-	// TODO: Implement this
-
+	////////////////////////////////////////////////// Example solution
+	while(mesh.property(property_distance, current_vh) > 0) {
+		double min_distance = std::numeric_limits<double>::infinity();
+		Mesh::VertexHandle min_vh;
+		for(Mesh::VertexVertexCCWIter vit = mesh.cvv_ccwbegin(current_vh); vit != mesh.cvv_ccwend(current_vh); vit++) {
+			double my_distance = mesh.property(property_distance, *vit);
+			if(my_distance < min_distance) {
+				min_distance = my_distance;
+				min_vh = *vit;
+			}
+		}
+		current_vh = min_vh;
+		result_path.push_back(current_vh);
+	}
+	////////////////////////////////////////////////// End example solution
 	assert(mesh.property(property_distance, result_path.back()) == 0);
 
 	std::reverse(result_path.begin(), result_path.end());

@@ -3,14 +3,23 @@
 
 Eigen::Vector3d from_barycentric_coordinates(Eigen::Vector3d v1, Eigen::Vector3d v2, Eigen::Vector3d v3, Eigen::Vector3d bary) {
 	assert(abs(1.0 - bary.sum()) < 1e-6);
-	Eigen::Vector3d result {0, 0, 0};
 	// TODO: implement
-	return result;
+	// ////////////////////////////////////////////////Example solution
+	return v1 * bary[0] + v2 * bary[1] + v3 * bary[2];
 }
 
 Eigen::Vector3d circumcenter(Eigen::Vector3d v1, Eigen::Vector3d v2, Eigen::Vector3d v3) {
-	Eigen::Vector3d bary;
 	// TODO: implement
+	Eigen::Vector3d bary;
+	// ////////////////////////////////////////////////Example solution
+	double a = (v2 - v3).norm();
+	double b = (v3 - v1).norm();
+	double c = (v1 - v2).norm();
+	bary[0] = a*a * (b*b + c*c - a*a);
+	bary[1] = b*b * (c*c + a*a - b*b);
+	bary[2] = c*c * (a*a + b*b - c*c);
+	bary /= bary.sum();
+	// ////////////////////////////////////////////////
 	return from_barycentric_coordinates(v1, v2, v3, bary);
 }
 
